@@ -1,0 +1,20 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Active Listings</h2>
+
+
+
+    {% for item in listing %}
+    <a href="{% url 'listing' item.id %}">
+        <h3>{{item.title}}</h3>
+        <Strong>Price ${{item.highest_bid}}</Strong>
+        <br>
+        {{item.description}}
+        <br>
+        {{item.link}}
+        <br>
+        <hr>
+    </a>
+    {% endfor %}
+{% endblock %}

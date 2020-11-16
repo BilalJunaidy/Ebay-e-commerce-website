@@ -1,0 +1,19 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'watchlist' %}">Add to watchlist</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'bid' %}">Bid on this item</a>
+</li>
+
+    <h3>{{listing.title}}</h3>
+    <Strong>Price ${{listing.highest_bid}}</Strong>
+    <br>
+    {{listing.description}}
+    <br>
+    {{listing.link}}
+    <br>
+{% endblock %}
