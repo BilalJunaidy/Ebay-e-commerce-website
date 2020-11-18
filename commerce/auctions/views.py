@@ -73,7 +73,7 @@ def create_listing(request):
     class auction_list_Form(ModelForm):
         class Meta:
             model = auction_list
-            exclude = ['auction_owner', 'auction_winner', 'status', 'highest_bid']
+            exclude = ['auction_owner', 'auction_winner', 'status', 'highest_bid', 'watchlist_users']
 
     if request.method == "POST":
         form = auction_list_Form(request.POST)
@@ -106,9 +106,61 @@ def listing(request, listing_id):
     except:
         return HttpResponse("NO such listing exists")
 
-    
+    userqueryset = User.objects.filter(watchlistusers = listing)
+    current_user_id = request.user.id
+    min_bid_price = listing.highest_bid
+
+    if not listing.auction_owner.id == current_user_id:
+        owner = False 
+    else:
+        owner = True
+
+    if current_user_id in userqueryset.values_list('id', flat=True):
+        In_watchlist = True
+    else:
+        In_watchlist = False
+        
+
+    ##watchlist = auction_list.objects.get(watchlist_user = User.objects.get(id=request.user.id))
+
     return render(request, "auctions/listing.html", {
+        "listing": listing,
+        "In_watchlist": In_watchlist,
+        "min_bid_price": min_bid_price,
+        "owner": owner
+        })
+
+def watchlist(request):
+    current_user = User.objects.get(id=request.user.id)
+    if request.method == "POST":
+        
+        listing_id = request.POST["listing_id"]
+        listing = auction_list.objects.get(pk = listing_id)
+
+        if request.POST["update"] == "add":
+            listing.watchlist_users.add(current_user)
+        else:
+            listing.watchlist_users.remove(current_user)
+        
+        return HttpResponseRedirect(reverse("index"))
+    else:
+        listing = auction_list.objects.filter(watchlist_users = current_user)
+        return render(request, "auctions/watchlist.html", {
         "listing": listing
         })
+        
+def bid(request, listing_id):
+    if request.method == "POST":
+        
+        return HttpResponse("U have just made a POST request")
+      
+        #listing = auction_list.objects.filter(pk=listing_id).values('highest_bid')[0]['highest_bid']
+        #listing = auction_list.objects.filter(pk=listing_id).first()['highest_bid']
+        #min_bid_price = auction_list.objects.get(pk=listing_id).auction_owner.id  
+        #return HttpResponse(f"bhains ---- {min_bid_price}")
+    else:
+        return HttpResponseRedirect(reverse('index'))
+        
+
 
         

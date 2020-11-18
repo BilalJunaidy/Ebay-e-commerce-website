@@ -21,17 +21,19 @@ class auction_list(models.Model):
     #dropdown list of options that the user has 
     highest_bid = models.IntegerField(validators=[MinValueValidator(1)]) 
     status = models.BooleanField(default = False) 
-    auction_winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name = "winner") 
+    auction_winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name = "winner")
+    watchlist_users = models.ManyToManyField(User, blank=True, related_name = "watchlistusers") 
 
     def __str__(self):
         return f"{self.id}, {self.auction_owner}, {self.title}, {self.description}, {self.starting_bid}, {self.link}, {self.auction_category}, {self.highest_bid}, {self.status}, {self.auction_winner}"
 
 
-class bid():
-    pass
+class bid(models.Model):
+    bid_owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name = "bidowner") #- this should be represented as a foreign key to the User model
+    listing = models.ForeignKey(auction_list, on_delete=models.CASCADE, related_name = "bidlisting") #this should be represented as a foreign key to the auction_listing model 
+    bid_amount = models.IntegerField() #this should represent the bid amount
 
-    #bid_owner - this should be represented as a foreign key to the User model
-    #listing - this should be represented as a foreign key to the auction_listing model 
+
 
 
 class comment():
