@@ -6,7 +6,8 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.forms import ModelForm
 
-from .models import User, auction_list, bid_model
+from .models import User, auction_list, bid
+#, Bid_Form
 
 
 ##@login_required
@@ -104,7 +105,7 @@ def listing(request, listing_id):
 
     class Bid_Form(ModelForm):
         class Meta:
-            model = bid_model
+            model = bid
             exclude = ['bid_owner','listing']
     modelform = Bid_Form()
 
@@ -162,7 +163,7 @@ def Bid(request, listing_id):
 
     class Bid_Form(ModelForm):
         class Meta:
-            model = bid_model
+            model = bid
             exclude = ['bid_owner','listing']
 
     if request.method == "POST":
@@ -174,25 +175,42 @@ def Bid(request, listing_id):
 
         form = Bid_Form(request.POST)
         if form.is_valid():
-            form.clean()
-            if form.cleaned_data["bid_amount"] < min_bid_price:
+            ##form.clean()
+            if int(form.cleaned_data["bid_amount"]) < min_bid_price:
                 return HttpResponse(f"Please enter a bid amount that is greater than the {min_bid_price}")
+            
             else:
-                bid = form.save(commit = False)
-                bid.bid_owner = current_user_object
-                bid.listing = listing_object
+                listing_object.highest_bid = form.cleaned_data["bid_amount"]
+                listing_object.save()
+
+                submitted_bid = form.save(commit = False)
+                submitted_bid.bid_owner = current_user_object
+                submitted_bid.listing = listing_object
                 form.save()
-
-
-        return HttpResponse("U have just made a POST request")
+                return HttpResponse("U have just made a successful BID request")
+            
+        else:
+            return HttpResponse(f"Your bid submission had an error. Please see error message below: \n\n{form.errors}")
       
         #listing = auction_list.objects.filter(pk=listing_id).values('highest_bid')[0]['highest_bid']
         #listing = auction_list.objects.filter(pk=listing_id).first()['highest_bid']
         #min_bid_price = auction_list.objects.get(pk=listing_id).auction_owner.id  
         #return HttpResponse(f"bhains ---- {min_bid_price}")
-    else:
-        return HttpResponseRedirect(reverse('index'))
-        
 
 
         
+def close(request, listing_id):
+    if request.method == 'POST':
+        listing_object = auction_list.objects.get(pk = listing_id)
+        if request.POST.get("option", "") == "close":
+            listing_object.status = True
+            listing_object.save()
+            highest_bid_objects = bid.objects.filter(listing = listing_object)
+            if not len(highest_bid_objects) == 0:
+                highest_bid_object = highest_bid_objects.order_by('-bid_amount').first()
+                listing_object.auction_owner = User.objects.get(pk = highest_bid_object.bid_owner.id)
+                listing_object.save()
+
+
+
+

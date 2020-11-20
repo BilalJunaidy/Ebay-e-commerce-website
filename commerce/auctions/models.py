@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.core.validators import MinValueValidator
+from django.forms import ModelForm
 
 
 class User(AbstractUser):
@@ -28,12 +29,15 @@ class auction_list(models.Model):
         return f"{self.id}, {self.auction_owner}, {self.title}, {self.description}, {self.starting_bid}, {self.link}, {self.auction_category}, {self.highest_bid}, {self.status}, {self.auction_winner}"
 
 
-class bid_model(models.Model):
+class bid(models.Model):
     bid_owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name = "bidowner") #- this should be represented as a foreign key to the User model
     listing = models.ForeignKey(auction_list, on_delete=models.CASCADE, related_name = "bidlisting") #this should be represented as a foreign key to the auction_listing model 
-    bid_amount = models.IntegerField(validators=[MinValueValidator(1)]) #this should represent the bid amount
+    bid_amount = models.IntegerField(validators=[MinValueValidator(2)]) #this should represent the bid amount
 
-
+class Bid_Form(ModelForm):
+    class Meta:
+        model = bid
+        exclude = ['bid_owner','listing']
 
 
 class comment():

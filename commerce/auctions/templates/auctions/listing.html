@@ -16,10 +16,11 @@
             <input class="btn btn-primary" type="submit" name = "update" value="add">
         {% endif %}
     </form>
-    <br>
-    <br>
+    
 
     {% if not owner %}
+        <br>
+        <br>
         <form method = "POST" action = "{% url 'bid' listing.id %}">
             {% csrf_token %}
             <!-- <input class="form-control" type="number" min={{min_bid_price}} name = "bid_amount" label="Enter bid amount"> -->
@@ -28,7 +29,19 @@
             <input class="btn btn-primary" type="submit" name = "bid" value="Submit Bid">
         </form>
     {% endif %}
-
+    
+    {% if owner %}
+        <br>
+        <br>
+        <form method="POST" action = "{% url 'close' listing.id %}">
+            {% csrf_token %}
+            <select name="option">
+                <option value="close">Close Listing</option>
+            </select>
+            <br>
+            <input type="submit" value="Save changes">
+        </form>
+    {% endif %}
 
 
 
