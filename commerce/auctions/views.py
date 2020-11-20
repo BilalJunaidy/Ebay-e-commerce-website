@@ -109,7 +109,6 @@ def listing(request, listing_id):
             exclude = ['bid_owner','listing']
     modelform = Bid_Form()
 
-
     try: 
         listing = auction_list.objects.get(pk=listing_id)
     except:
@@ -128,6 +127,16 @@ def listing(request, listing_id):
         In_watchlist = True
     else:
         In_watchlist = False
+    
+    if listing.status == False:
+        available = True
+    else:
+        available = False
+
+    if not available and listing.auction_winner.id == current_user_id:
+        win = True
+    else:
+        win = False
         
 
     ##watchlist = auction_list.objects.get(watchlist_user = User.objects.get(id=request.user.id))
@@ -137,7 +146,9 @@ def listing(request, listing_id):
         "In_watchlist": In_watchlist,
         "min_bid_price": min_bid_price,
         "owner": owner,
-        "form": modelform
+        "form": modelform,
+        "available":available,
+        "win": win
         })
 
 def watchlist(request):
@@ -210,6 +221,32 @@ def close(request, listing_id):
                 highest_bid_object = highest_bid_objects.order_by('-bid_amount').first()
                 listing_object.auction_owner = User.objects.get(pk = highest_bid_object.bid_owner.id)
                 listing_object.save()
+            else:
+                return HttpResponseRedirect(reverse("index"))
+
+
+def categories(request):
+    category_queryset = auction_list.objects.values_list('auction_category', flat=True).distinct()
+
+    return render(request, "auctions/categories.html", {
+        "categories": category_queryset})
+
+def specific_category(request, category):
+    
+    specific_category_queryset = auction_list.objects.filter(auction_category = category)
+
+    return render(request, "auctions/specific_category_query.html", {
+        "listing": specific_category_queryset, 
+        "category": category
+    })
+        
+    return HttpResponse(f"welcome to {category}")
+
+
+
+
+
+
 
 
 

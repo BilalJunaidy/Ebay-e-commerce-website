@@ -1,8 +1,7 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
-
+    <h2>Active listings with a Category of {{category}}</h2>
 
 
     {% for item in listing %}
@@ -14,7 +13,6 @@
         {{item.description}}
         <br>
         <img src={{item.link}} alt="Photu of {{item.title}}">
-        <hr>
         <hr>
     </a>
     {% endfor %}

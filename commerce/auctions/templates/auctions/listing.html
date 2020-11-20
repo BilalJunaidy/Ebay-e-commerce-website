@@ -2,7 +2,9 @@
 
 {% block body %}
 
-
+    {% if win %}
+        <h3>Congratulations! You have won this auction!</h3>
+    {% endif %}
     
     <form method = "POST" action = "{% url 'watchlist' %}">
         {% csrf_token %}
@@ -30,7 +32,7 @@
         </form>
     {% endif %}
     
-    {% if owner %}
+    {% if owner and available %}
         <br>
         <br>
         <form method="POST" action = "{% url 'close' listing.id %}">
