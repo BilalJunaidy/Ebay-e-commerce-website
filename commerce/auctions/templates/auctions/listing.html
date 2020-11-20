@@ -22,7 +22,8 @@
     {% if not owner %}
         <form method = "POST" action = "{% url 'bid' listing.id %}">
             {% csrf_token %}
-            <input class="form-control" type="number" min={{min_bid_price}} name = "bid_amount" label="Enter bid amount">
+            <!-- <input class="form-control" type="number" min={{min_bid_price}} name = "bid_amount" label="Enter bid amount"> -->
+            {{ form }}
             <br>
             <input class="btn btn-primary" type="submit" name = "bid" value="Submit Bid">
         </form>

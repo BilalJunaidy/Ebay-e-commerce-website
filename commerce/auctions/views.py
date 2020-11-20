@@ -6,8 +6,8 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.forms import ModelForm
 
+from .models import User, auction_list, bid_model
 
-from .models import User, auction_list
 
 ##@login_required
 def index(request):
@@ -101,6 +101,14 @@ def create_listing(request):
     })
 
 def listing(request, listing_id):
+
+    class Bid_Form(ModelForm):
+        class Meta:
+            model = bid_model
+            exclude = ['bid_owner','listing']
+    modelform = Bid_Form()
+
+
     try: 
         listing = auction_list.objects.get(pk=listing_id)
     except:
@@ -127,7 +135,8 @@ def listing(request, listing_id):
         "listing": listing,
         "In_watchlist": In_watchlist,
         "min_bid_price": min_bid_price,
-        "owner": owner
+        "owner": owner,
+        "form": modelform
         })
 
 def watchlist(request):
@@ -149,9 +158,32 @@ def watchlist(request):
         "listing": listing
         })
         
-def bid(request, listing_id):
+def Bid(request, listing_id):
+
+    class Bid_Form(ModelForm):
+        class Meta:
+            model = bid_model
+            exclude = ['bid_owner','listing']
+
     if request.method == "POST":
-        
+
+        listing_object = auction_list.objects.get(pk=listing_id)
+        min_bid_price = listing_object.highest_bid
+        current_user_object = User.objects.get(pk=request.user.id)
+
+
+        form = Bid_Form(request.POST)
+        if form.is_valid():
+            form.clean()
+            if form.cleaned_data["bid_amount"] < min_bid_price:
+                return HttpResponse(f"Please enter a bid amount that is greater than the {min_bid_price}")
+            else:
+                bid = form.save(commit = False)
+                bid.bid_owner = current_user_object
+                bid.listing = listing_object
+                form.save()
+
+
         return HttpResponse("U have just made a POST request")
       
         #listing = auction_list.objects.filter(pk=listing_id).values('highest_bid')[0]['highest_bid']

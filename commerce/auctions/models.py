@@ -28,10 +28,10 @@ class auction_list(models.Model):
         return f"{self.id}, {self.auction_owner}, {self.title}, {self.description}, {self.starting_bid}, {self.link}, {self.auction_category}, {self.highest_bid}, {self.status}, {self.auction_winner}"
 
 
-class bid(models.Model):
+class bid_model(models.Model):
     bid_owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name = "bidowner") #- this should be represented as a foreign key to the User model
     listing = models.ForeignKey(auction_list, on_delete=models.CASCADE, related_name = "bidlisting") #this should be represented as a foreign key to the auction_listing model 
-    bid_amount = models.IntegerField() #this should represent the bid amount
+    bid_amount = models.IntegerField(validators=[MinValueValidator(1)]) #this should represent the bid amount
 
 
 
