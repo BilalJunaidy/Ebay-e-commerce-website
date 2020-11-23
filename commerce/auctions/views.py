@@ -8,7 +8,7 @@ from django.forms import ModelForm
 
 from .models import User, auction_list, bid, comment, Comment_Form
 
-##@login_required
+@login_required(login_url='login')
 def index(request):
     active_listings = auction_list.objects.filter(status=False)
     return render(request, "auctions/index.html", {
@@ -67,6 +67,7 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
+@login_required(login_url='login')
 def create_listing(request):
 
     class auction_list_Form(ModelForm):
@@ -99,6 +100,7 @@ def create_listing(request):
         "form": modelform
     })
 
+@login_required(login_url='login')
 def listing(request, listing_id):
 
     class Bid_Form(ModelForm):
@@ -157,6 +159,7 @@ def listing(request, listing_id):
         "current_comments": current_comments
         })
 
+@login_required(login_url='login')
 def watchlist(request):
     current_user = User.objects.get(id=request.user.id)
     if request.method == "POST":
@@ -175,7 +178,8 @@ def watchlist(request):
         return render(request, "auctions/watchlist.html", {
         "listing": listing
         })
-        
+
+@login_required(login_url='login')        
 def Bid(request, listing_id):
 
     class Bid_Form(ModelForm):
@@ -208,6 +212,9 @@ def Bid(request, listing_id):
             
         else:
             return HttpResponse(f"Your bid submission had an error. Please see error message below: \n\n{form.errors}")
+    
+    else:
+        return HttpResponseRedirect(reverse("index"))
       
         #listing = auction_list.objects.filter(pk=listing_id).values('highest_bid')[0]['highest_bid']
         #listing = auction_list.objects.filter(pk=listing_id).first()['highest_bid']
@@ -215,7 +222,7 @@ def Bid(request, listing_id):
         #return HttpResponse(f"bhains ---- {min_bid_price}")
 
 
-        
+@login_required(login_url='login')        
 def close(request, listing_id):
     if request.method == 'POST':
         listing_object = auction_list.objects.get(pk = listing_id)
@@ -231,12 +238,14 @@ def close(request, listing_id):
                 return HttpResponseRedirect(reverse("index"))
 
 
+@login_required(login_url='login')
 def categories(request):
     category_queryset = auction_list.objects.values_list('auction_category', flat=True).distinct()
 
     return render(request, "auctions/categories.html", {
         "categories": category_queryset})
 
+@login_required(login_url='login')
 def specific_category(request, category):
     
     specific_category_queryset = auction_list.objects.filter(auction_category = category)
@@ -248,7 +257,7 @@ def specific_category(request, category):
         
     return HttpResponse(f"welcome to {category}")
 
-
+@login_required(login_url='login')
 def comments(request, listing_id):
     if request.method == "POST":
         form = Comment_Form(request.POST)

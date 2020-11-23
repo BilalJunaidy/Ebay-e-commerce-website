@@ -71,20 +71,22 @@
     {% endif %}
 
     {% if current_comments %}
+    <br>
+    <br>
     <hr>
         <h4> Comments on this listing </h4>
-    <br>
+    <hr>
 
     
     <ul>
 
-        {% for comment in current_comments %}
-        <hr> 
+        {% for comment in current_comments %} 
             <li> Comment made by: {{comment.owner}}</li>
             <li> Title: {{comment.title}}</li>
             <li> Comment: {{comment.description}}</li>
             <br>
             <br>
+            <hr>
             {% empty %}
 
         {% endfor %}
