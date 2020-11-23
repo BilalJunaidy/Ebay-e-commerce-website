@@ -40,9 +40,14 @@ class Bid_Form(ModelForm):
         exclude = ['bid_owner','listing']
 
 
-class comment():
-    pass 
-    #comment_owner = models.Charfield - Should be represented as a foreign key to the user models
+
+class comment(models.Model):
+    title = models.CharField(max_length = 64)
+    description = models.CharField(max_length = 600)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name = "comment_owner")
+    listing = models.ForeignKey(auction_list, on_delete=models.CASCADE, related_name = "comment_listing")
+
+    #comment_owner = models.Charfield #- Should be represented as a foreign key to the user models
     #title = models.Charfield 
     #description = models.Charfield - this is going to represent the actual comment made by the user
     #associated_listing - Should be represented as a foreign key to the auction_listing models  

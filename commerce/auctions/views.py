@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.forms import ModelForm
 
-from .models import User, auction_list, bid
+from .models import User, auction_list, bid, comment    
 #, Bid_Form
 
 
