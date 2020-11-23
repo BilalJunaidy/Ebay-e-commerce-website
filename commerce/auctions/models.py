@@ -47,6 +47,13 @@ class comment(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name = "comment_owner")
     listing = models.ForeignKey(auction_list, on_delete=models.CASCADE, related_name = "comment_listing")
 
+
+class Comment_Form(ModelForm):
+    class Meta:
+        model = comment
+        exclude = ['listing','owner']
+
+
     #comment_owner = models.Charfield #- Should be represented as a foreign key to the user models
     #title = models.Charfield 
     #description = models.Charfield - this is going to represent the actual comment made by the user

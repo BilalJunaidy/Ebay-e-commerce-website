@@ -6,9 +6,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.forms import ModelForm
 
-from .models import User, auction_list, bid, comment    
-#, Bid_Form
-
+from .models import User, auction_list, bid, comment, Comment_Form
 
 ##@login_required
 def index(request):
@@ -109,6 +107,7 @@ def listing(request, listing_id):
             exclude = ['bid_owner','listing']
     modelform = Bid_Form()
 
+
     try: 
         listing = auction_list.objects.get(pk=listing_id)
     except:
@@ -117,6 +116,11 @@ def listing(request, listing_id):
     userqueryset = User.objects.filter(watchlistusers = listing)
     current_user_id = request.user.id
     min_bid_price = listing.highest_bid
+
+    commentform = Comment_Form()
+
+    current_comments = comment.objects.filter(listing = auction_list.objects.get(pk = listing_id))
+
 
     if not listing.auction_owner.id == current_user_id:
         owner = False 
@@ -148,7 +152,9 @@ def listing(request, listing_id):
         "owner": owner,
         "form": modelform,
         "available":available,
-        "win": win
+        "win": win, 
+        "commentform": commentform,
+        "current_comments": current_comments
         })
 
 def watchlist(request):
@@ -242,6 +248,22 @@ def specific_category(request, category):
         
     return HttpResponse(f"welcome to {category}")
 
+
+def comments(request, listing_id):
+    if request.method == "POST":
+        form = Comment_Form(request.POST)
+        if form.is_valid():
+            comment = form.save(commit = False)
+            comment.owner = User.objects.get(pk = request.user.id)
+            comment.listing = auction_list.objects.get(pk = listing_id)
+            comment.save()
+
+        return HttpResponseRedirect(reverse(index))
+
+
+        
+    else:
+        return HttpResponseRedirect(reverse(index))
 
 
 

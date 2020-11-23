@@ -47,6 +47,8 @@
 
 
 
+
+
     <h3>{{listing.title}}</h3>
     <Strong>Price ${{listing.highest_bid}}</Strong>
     <br>
@@ -54,4 +56,46 @@
     <br>
     {{listing.link}}
     <br>
+    <br>
+    <hr>
+    
+
+    {% if not owner %}
+    <h3> Submit comments </h3>
+    <form method="POST" action="{% url 'comments' listing.id %}">
+        {% csrf_token %}
+        {{commentform}}
+        <input type="submit" value="Submit Comment">
+    </form>
+
+    {% endif %}
+
+    {% if current_comments %}
+    <hr>
+        <h4> Comments on this listing </h4>
+    <br>
+
+    
+    <ul>
+
+        {% for comment in current_comments %}
+        <hr> 
+            <li> Comment made by: {{comment.owner}}</li>
+            <li> Title: {{comment.title}}</li>
+            <li> Comment: {{comment.description}}</li>
+            <br>
+            <br>
+            {% empty %}
+
+        {% endfor %}
+
+    </ul>
+        
+
+
+
+    {% endif %}
+
+
 {% endblock %}
+
