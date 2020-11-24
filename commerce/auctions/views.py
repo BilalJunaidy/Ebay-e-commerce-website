@@ -247,10 +247,12 @@ def close(request, listing_id):
 
 @login_required(login_url='login')
 def categories(request):
-    category_queryset = auction_list.objects.values_list('auction_category', flat=True).distinct()
-
+    listing_objects = auction_list.objects.exclude(auction_category = "")
+    category_queryset = listing_objects.values_list('auction_category', flat=True).distinct()
+    
     return render(request, "auctions/categories.html", {
-        "categories": category_queryset})
+        "categories": category_queryset 
+    })
 
 @login_required(login_url='login')
 def specific_category(request, category):
