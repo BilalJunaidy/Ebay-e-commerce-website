@@ -72,6 +72,8 @@ def create_listing(request):
 
     class auction_list_Form(ModelForm):
         class Meta:
+            #link = forms.CharField(blank=True)
+
             model = auction_list
             exclude = ['auction_owner', 'auction_winner', 'status', 'highest_bid', 'watchlist_users']
 
@@ -208,7 +210,7 @@ def Bid(request, listing_id):
                 submitted_bid.bid_owner = current_user_object
                 submitted_bid.listing = listing_object
                 form.save()
-                return HttpResponse("U have just made a successful BID request")
+                return HttpResponseRedirect(reverse('index'))
             
         else:
             return HttpResponse(f"Your bid submission had an error. Please see error message below: \n\n{form.errors}")
@@ -225,17 +227,22 @@ def Bid(request, listing_id):
 @login_required(login_url='login')        
 def close(request, listing_id):
     if request.method == 'POST':
+        
         listing_object = auction_list.objects.get(pk = listing_id)
-        if request.POST.get("option", "") == "close":
+        if request.POST.get('option') == "close":
             listing_object.status = True
             listing_object.save()
             highest_bid_objects = bid.objects.filter(listing = listing_object)
+
             if not len(highest_bid_objects) == 0:
                 highest_bid_object = highest_bid_objects.order_by('-bid_amount').first()
-                listing_object.auction_owner = User.objects.get(pk = highest_bid_object.bid_owner.id)
+                listing_object.auction_winner = User.objects.get(pk = highest_bid_object.bid_owner.id)
                 listing_object.save()
+                return HttpResponseRedirect(reverse("index"))
             else:
                 return HttpResponseRedirect(reverse("index"))
+        else:
+            return HttpResponse("oh bhains")
 
 
 @login_required(login_url='login')

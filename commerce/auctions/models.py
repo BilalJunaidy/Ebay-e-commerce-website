@@ -15,8 +15,8 @@ class auction_list(models.Model):
     title = models.CharField(max_length = 64)
     description = models.CharField(max_length = 1200)
     starting_bid = models.IntegerField(validators=[MinValueValidator(1)])
-    link = models.URLField(max_length = 200)  
-    auction_category = models.CharField(max_length = 64)
+    link = models.URLField(max_length = 200, blank=True)  
+    auction_category = models.CharField(max_length = 64, blank=True)
     # - I think it will be helpful if I am able to provide pre-populated categories to the client at the time 
     #of creating the auction listing. I could also create a list of categories used by all clients and then use that as the starting point of the 
     #dropdown list of options that the user has 

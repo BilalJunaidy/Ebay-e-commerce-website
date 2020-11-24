@@ -3,26 +3,33 @@
 {% block body %}
 
     {% if win %}
-        <h3>Congratulations! You have won this auction!</h3>
+        <h4>Congratulations! You have won this auction!</h4>
+        <br>
+        <hr>
+        <br>
     {% endif %}
     
+    {% if available %}
     <form method = "POST" action = "{% url 'watchlist' %}">
         {% csrf_token %}
         {% if In_watchlist %}
-            <h1>You can remove this item now from the watchlist</h1>
+            <h4>You can remove this item now from the watchlist</h4>
             <input type = "hidden" name = "listing_id" value = {{listing.id}}>
             <input class="btn btn-primary" type="submit" name = "update" value="remove">
         {% else %}  
-            <h1>You can add this item now from the watchlist</h1>
+            <h4>You can add this item now from the watchlist</h4>
             <input type = "hidden" name = "listing_id" value = {{listing.id}}>
             <input class="btn btn-primary" type="submit" name = "update" value="add">
         {% endif %}
+    <br>
+    <hr>
+    <br>
     </form>
+    {% endif %}
     
 
-    {% if not owner %}
-        <br>
-        <br>
+    {% if not owner and available %}
+        <h4>You can now place a bid on this auction listing</h4>
         <form method = "POST" action = "{% url 'bid' listing.id %}">
             {% csrf_token %}
             <!-- <input class="form-control" type="number" min={{min_bid_price}} name = "bid_amount" label="Enter bid amount"> -->
@@ -30,11 +37,13 @@
             <br>
             <input class="btn btn-primary" type="submit" name = "bid" value="Submit Bid">
         </form>
+        <br>
+        <hr>
+        <br>
     {% endif %}
     
     {% if owner and available %}
-        <br>
-        <br>
+        <h4> You can can close this auction listing </h4>
         <form method="POST" action = "{% url 'close' listing.id %}">
             {% csrf_token %}
             <select name="option">
@@ -43,12 +52,15 @@
             <br>
             <input type="submit" value="Save changes">
         </form>
+        <br>
+        <hr>
+        <br>
     {% endif %}
 
 
 
 
-
+    <h4>Listing details</h4>
     <h3>{{listing.title}}</h3>
     <Strong>Price ${{listing.highest_bid}}</Strong>
     <br>
@@ -56,11 +68,11 @@
     <br>
     {{listing.link}}
     <br>
-    <br>
     <hr>
+    <br>
     
 
-    {% if not owner %}
+    {% if not owner and available %}
     <h3> Submit comments </h3>
     <form method="POST" action="{% url 'comments' listing.id %}">
         {% csrf_token %}
@@ -75,8 +87,6 @@
     <br>
     <hr>
         <h4> Comments on this listing </h4>
-    <hr>
-
     
     <ul>
 
